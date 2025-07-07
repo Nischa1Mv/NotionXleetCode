@@ -20,6 +20,9 @@ export default async function getProblemDetails(problemName) {
     }
 
   } catch (error) {
+    if( error.message.includes('429')) {
+      throw new Error("Rate limit exceeded. Please try again later.");
+    }
     console.error("Error fetching problem details:", error.message);
     throw error;
   }

@@ -56,6 +56,10 @@ app.post('/sync', async (req, res) => {
                 await updatePendingPages(problem.id, properties);
                 console.log(`✅ Updated: ${titleSlug}`);
             } catch (err) {
+                if( err.message.includes('429')) {
+                    res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
+                    return;
+                }
                 console.warn('⚠️ Failed to update for:', titleSlug, err.message);
                 continue;
             }
