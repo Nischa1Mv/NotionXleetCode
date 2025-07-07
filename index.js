@@ -56,7 +56,7 @@ app.post('/sync', async (req, res) => {
                 await updatePendingPages(problem.id, properties);
                 console.log(`✅ Updated: ${titleSlug}`);
             } catch (err) {
-                if( err.message.includes('429')) {
+                if (err.message.includes('429')) {
                     res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
                     return;
                 }
@@ -78,11 +78,11 @@ app.get('/problem/:slug', async (req, res) => {
         const data = await getProblemDetails(slug);
         res.status(200).json(data);
     } catch (err) {
-        if(err.message.includes('429')) {
-           res.status(429).json({ error: `⚠️ Rate limit exceeded. Retry after a while.` });
+        if (err.message.includes('429')) {
+            res.status(429).json({ error: `⚠️ Rate limit exceeded. Retry after a while.` });
         }
         else {
-           res.status(500).json({ error: `Failed to fetch problem details for ${slug}: ${err.message}` });
+            res.status(500).json({ error: `Failed to fetch problem details for ${slug}: ${err.message}` });
         }
     }
 });
