@@ -1,8 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import getProblemDetails from './leetcode.js';
-import { getPendingPages, updatePendingPages } from './notion.js';
-import {toSlug} from './utils.js';
+import { addName, getPendingPages, updatePendingPages,getAllPages } from './notion.js';
+import { toSlug } from './utils.js';
 
 dotenv.config();
 const app = express();
@@ -16,10 +16,92 @@ if (!database_id) {
 }
 
 app.use(express.json());
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     res.send('✅ Notion-LeetCode Sync Server Running');
 });
+
+app.post('/add', async (req, res) => {
+    const { name, approach } = req.body;
+    if (!name || !approach) {
+        return res.status(400).json({ error: 'Name and approach are required.' });
+    }
+
+    try {
+        const duplicateCheck = await getAllPages(database_id);
+
+        const alreadyExists = duplicateCheck.some(page => {
+            const notionTitle = page.properties["Name"].title[0]?.text?.content;
+            return notionTitle?.trim().toLowerCase() === name.trim().toLowerCase();
+        });
+
+        if (alreadyExists) {
+            console.log(`ℹ️ Problem already exists: ${name}`);
+            return res.status(400).json({ error: 'Problem already exists in the database.' });
+        }
+
+        const newRow = await addName(database_id, name, approach);
+        if (!newRow) {
+            return res.status(500).json({ error: 'Failed to create new page.' });
+        }
+
+        try {
+            await syncNow();
+        } catch (syncError) {
+            console.error(`⚠️ Sync failed after adding ${name}:`, syncError);
+            return res.status(207).json({  // 207 = Multi-Status (partially succeeded)
+                message: 'Problem added but sync failed.',
+                pageId: newRow.id,
+                syncError: syncError.message || 'Unknown sync error',
+            });
+        }
+
+        console.log(`✅ Added and synced: ${name}`);
+        res.status(201).json({ message: 'Problem added and synced successfully.', pageId: newRow.id });
+
+    } catch (err) {
+        console.error('❌ Error adding problem:', err);
+        if (err.message.includes('429')) {
+            return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
+        }
+        res.status(500).json({ error: 'Failed to add problem.' });
+    }
+});
+
+
+async function syncNow() {
+    const pendingProblems = await getPendingPages(database_id);
+    if (pendingProblems.length === 0) return;
+
+    for (const problem of pendingProblems) {
+        const titleObj = problem.properties["Name"].title[0];
+        if (!titleObj) continue;
+
+        const title = titleObj.text.content;
+        const titleSlug = toSlug(title);
+        try {
+            const details = await getProblemDetails(titleSlug);
+            if (!details) continue;
+
+            const properties = {
+                questionId: details.questionId,
+                titleSlug: details.titleSlug,
+                question: details.question,
+                link: details.link,
+                difficulty: details.difficulty,
+                topicTags: details.topicTags
+            };
+
+            await updatePendingPages(problem.id, properties);
+            console.log(`✅ Updated: ${titleSlug}`);
+        } catch (err) {
+            console.warn('⚠️ Failed to update for:', titleSlug, err.message);
+        }
+    }
+}
+
+
 
 app.post('/sync', async (req, res) => {
     try {
