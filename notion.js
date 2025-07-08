@@ -19,6 +19,14 @@ async function getPendingPages(databaseId) {
 
     return response.results;
 }
+async function getAllPages(databaseId) {
+    const response = await notion.databases.query({
+        database_id: databaseId,
+        page_size: 100,
+    });
+    return response.results;
+}
+
 
 //   return {
 //                 questionId: problem.questionId,
@@ -28,6 +36,38 @@ async function getPendingPages(databaseId) {
 //                 difficulty: problem.difficulty,
 //                 topicTags: problem.topicTags,
 //             };
+
+async function addName(databaseId,Name,approach){
+    const response = await notion.pages.create({
+        parent: { database_id: databaseId },
+        properties: {
+            "Name": {
+                title: [
+                    {
+                        text: {
+                            content: Name
+                        }
+                    }
+                ]
+            },
+            "Approach": {
+                rich_text: [
+                    {
+                        text: {
+                            content: approach
+                        }
+                    }
+                ]
+            },
+            "Status": {
+                select: { name: "Pending" }
+            }
+        }
+    });
+
+    return response;
+
+}
 
 async function updatePendingPages(pageId, properties) {
     await notion.pages.update({
@@ -74,4 +114,4 @@ async function updatePendingPages(pageId, properties) {
 
 
 }
-export { updatePendingPages, getPendingPages };
+export { addName,updatePendingPages, getPendingPages,getAllPages };
