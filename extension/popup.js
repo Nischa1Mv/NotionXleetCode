@@ -21,35 +21,35 @@ function updateStatus(message, type = 'info') {
 }
 
 
-document.getElementById("sync").addEventListener("click", async () => {
-  try {
-    updateStatus("🔄 Syncing...", "info");
+// document.getElementById("sync").addEventListener("click", async () => {
+//   try {
+//     updateStatus("🔄 Syncing...", "info");
 
-    const res = await fetch(`${serverUrl}/sync`, {
-      method: 'POST'
-    });
+//     const res = await fetch(`${serverUrl}/sync`, {
+//       method: 'POST'
+//     });
 
-    let data;
-    try {
-      data = await res.json();
-    } catch (jsonErr) {
-      updateStatus("❌ Invalid server response.", "error");
-      return;
-    }
+//     let data;
+//     try {
+//       data = await res.json();
+//     } catch (jsonErr) {
+//       updateStatus("❌ Invalid server response.", "error");
+//       return;
+//     }
 
-    if (res.status === 429) {
-      updateStatus("🚫 Rate limit exceeded. Try again later.", "warning");
-    } else if (!res.ok) {
-      updateStatus(data.error || "❌ Sync failed.", "error");
-    } else {
-      updateStatus(data.message || "✅ Sync completed!", "success");
-    }
+//     if (res.status === 429) {
+//       updateStatus("🚫 Rate limit exceeded. Try again later.", "warning");
+//     } else if (!res.ok) {
+//       updateStatus(data.error || "❌ Sync failed.", "error");
+//     } else {
+//       updateStatus(data.message || "✅ Sync completed!", "success");
+//     }
 
-  } catch (err) {
-    console.error('❌ Network error during sync:', err);
-    updateStatus("❌ Failed to connect to server.", "error");
-  }
-});
+//   } catch (err) {
+//     console.error('❌ Network error during sync:', err);
+//     updateStatus("❌ Failed to connect to server.", "error");
+//   }
+// });
 
 
 // Run when the extension is loaded
