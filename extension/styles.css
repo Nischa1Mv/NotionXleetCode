@@ -1,10 +1,13 @@
 :root {
-  --bg: #fff;
-  --accent: #2563eb;
-  --text: #222;
-  --border: #e5e7eb;
+  --bg: #111;
+  --accent: #a3e635;           /* lime-400 from Tailwind */
+  --accent-hover: #bef264;     /* lime-300 */
+  --text: #fff;
+  --text-muted: #9ca3af;       /* gray-400 */
+  --border: #374151;           /* gray-700 */
+  --input-bg: #222;
   --radius: 8px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --padding: 16px;
   --font: 'Segoe UI', Arial, sans-serif;
 }
@@ -48,7 +51,7 @@ a:hover, a:focus {
 
 button, input[type="submit"] {
   background: var(--accent);
-  color: #fff;
+  color: #000;
   border: none;
   border-radius: var(--radius);
   padding: 8px 14px;
@@ -60,7 +63,7 @@ button, input[type="submit"] {
 }
 
 button:hover, input[type="submit"]:hover {
-  background: #1d4fd7;
+  background: var(--accent-hover);
 }
 
 input, select, textarea {
@@ -71,7 +74,8 @@ input, select, textarea {
   border-radius: var(--radius);
   font-family: inherit;
   font-size: 1em;
-  background: #f9fafb;
+  background: var(--input-bg);
+  color: var(--text);
   transition: border 0.2s;
   box-sizing: border-box;
 }
@@ -86,6 +90,7 @@ label {
   font-weight: 500;
   margin-bottom: 2px;
   display: block;
+  color: var(--text-muted);
 }
 
 hr {
@@ -109,12 +114,12 @@ hr {
 
 ::-webkit-scrollbar {
   width: 7px;
-  background: #f3f4f6;
+  background: #1f2937;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #4b5563;
   border-radius: 6px;
 }
 
