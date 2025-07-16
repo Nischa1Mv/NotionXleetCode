@@ -114,4 +114,53 @@ async function updatePendingPages(pageId, properties) {
 
 
 }
-export { addName,updatePendingPages, getPendingPages,getAllPages };
+
+async function addRow(databaseId, title, description, approach, solutionUrl, difficulty, tags ) {
+    const response = await notion.pages.create({
+        parent: { database_id: databaseId },
+        properties: {
+            "Name": {
+                title: [
+                    {
+                        text: {
+                            content: title
+                        }
+                    }
+                ]
+            },
+            "Problem": {
+                rich_text: [
+                    {
+                        text: {
+                            content: description
+                        }
+                    }
+                ]
+            },
+            "Approach": {
+                rich_text: [
+                    {
+                        text: {
+                            content: approach
+                        }
+                    }
+                ]
+            },
+            "Solution": {
+                url: solutionUrl
+            },
+            "Difficulty": {
+                select: { name: difficulty }
+            },
+            "Tags": {
+                multi_select: tags.map(tag => ({ name: tag }))
+            },
+             "Status": {
+                select: { name: "Synced" }
+            }
+        }
+    });
+    return response;
+}
+
+export { addName,updatePendingPages, getPendingPages,getAllPages, addRow };

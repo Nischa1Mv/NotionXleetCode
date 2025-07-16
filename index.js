@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import getProblemDetails from './leetcode.js';
-import { addName, getPendingPages, updatePendingPages,getAllPages } from './notion.js';
+import { addName, getPendingPages, updatePendingPages, getAllPages, addRow } from './notion.js';
 import { toSlug } from './utils.js';
 
 dotenv.config();
@@ -171,4 +171,34 @@ app.get('/problem/:slug', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on ${DOMAIN}`);
+});
+
+
+
+app.post('/save', async (req, res) => {
+    const { title, description, approach, solutionUrl, difficulty, tags } = req.body;
+    if (!title || !description || !approach || !solutionUrl || !difficulty || !tags) {
+        return res.status(400).json({ error: 'All fields are required.' });
+    }
+    try {
+        const allPages = await getAllPages(database_id);
+        const alreadyExists = allPages.some(page => {
+            const notionTitle = page.properties["Name"].title[0]?.text?.content;
+            return notionTitle?.trim().toLowerCase() === title.trim().toLowerCase();
+        }
+        );
+        if (alreadyExists) {
+            return res.status(400).json({ error: 'Problem already exists in the database.' });
+        }
+        const newRow = await addRow(database_id, title, description, approach, solutionUrl, difficulty, tags);
+        res.status(201).json({ message: 'Problem saved successfully.', pageId: newRow.id });
+
+    }
+    catch (err) {
+        console.error('❌ Error saving problem:', err);
+        if (err.message.includes('429')) {
+            return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
+        }
+        res.status(500).json({ error: 'Failed to save problem.' });
+    }
 });
