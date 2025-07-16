@@ -3,7 +3,10 @@
   "name": "LeetCode → Notion Sync",
   "version": "1.0",
   "description": "Send LeetCode problem to Notion with one click",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "tabs", "scripting"],
+  "host_permissions": [
+    "https://leetcode.com/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png"

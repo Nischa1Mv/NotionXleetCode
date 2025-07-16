@@ -114,7 +114,7 @@ document.getElementById("send").addEventListener("click", async () => {
     }
     
     // Send the details to your API
-    const response = await fetch(`${serverUrl}/add`, {
+    const response = await fetch(`${serverUrl}/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
