@@ -3,12 +3,19 @@ import dotenv from 'dotenv';
 import getProblemDetails from './leetcode.js';
 import { addName, getPendingPages, updatePendingPages, getAllPages, addRow } from './notion.js';
 import { toSlug } from './utils.js';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const database_id = process.env.NOTION_DATABASE_ID;
 const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
+
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+}));
 
 if (!database_id) {
     console.error('❌ NOTION_DATABASE_ID is missing in .env');
