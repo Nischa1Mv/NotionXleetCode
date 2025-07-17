@@ -1,0 +1,29 @@
+{
+  "name": "notionxleetcode",
+  "version": "1.0.0",
+  "description": "The extension extracts question details from LeetCode and seamlessly integrates them into a Notion database using the Notion API.",
+  "main": "popup.js",
+  "scripts": {
+    "test": "echo \\\"No tests configured yet.\\\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nischa1Mv/NotionXleetCode.git"
+  },
+  "keywords": [
+    "Notion",
+    "leetcode",
+    "Feynman",
+    "Method"
+  ],
+  "author": "Nischa!Mv",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nischa1Mv/NotionXleetCode/issues"
+  },
+  "homepage": "https://github.com/Nischa1Mv/NotionXleetCode#readme",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "dotenv": "^17.2.0"
+  }
+}

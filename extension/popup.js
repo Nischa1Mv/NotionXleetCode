@@ -5,52 +5,7 @@ import {
   extractProblemDifficulty,
   extractProblemUrl
 } from './utils.js';
-const serverUrl = `https://notionxleetcode.onrender.com`;
-// Helper function to update status with proper styling
-function updateStatus(message, type = 'info') {
-  const statusEl = document.getElementById("status");
-  const iconMap = {
-    error: '❌',
-    success: '✅',
-    warning: '⚠️',
-    info: 'ℹ️'
-  };
-
-  statusEl.innerHTML = `${iconMap[type] || ''} ${message}`;
-  statusEl.className = `status-${type}`;
-}
-
-
-// document.getElementById("sync").addEventListener("click", async () => {
-//   try {
-//     updateStatus("🔄 Syncing...", "info");
-
-//     const res = await fetch(`${serverUrl}/sync`, {
-//       method: 'POST'
-//     });
-
-//     let data;
-//     try {
-//       data = await res.json();
-//     } catch (jsonErr) {
-//       updateStatus("❌ Invalid server response.", "error");
-//       return;
-//     }
-
-//     if (res.status === 429) {
-//       updateStatus("🚫 Rate limit exceeded. Try again later.", "warning");
-//     } else if (!res.ok) {
-//       updateStatus(data.error || "❌ Sync failed.", "error");
-//     } else {
-//       updateStatus(data.message || "✅ Sync completed!", "success");
-//     }
-
-//   } catch (err) {
-//     console.error('❌ Network error during sync:', err);
-//     updateStatus("❌ Failed to connect to server.", "error");
-//   }
-// });
-
+import { getAllPages, addRow } from './notion.js';
 
 // Run when the extension is loaded
 // Global variable to store problem details
@@ -75,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+
 // Function to extract problem details
 async function extractProblemDetails() {
   try {
@@ -85,19 +41,30 @@ async function extractProblemDetails() {
       extractProblemDifficulty(),
       extractProblemUrl(),
     ]);
-    return { title, description, tags, difficulty, solutionUrl ,approach };
+    // Validate required fields
+    if (!title || !description || !solutionUrl|| !tags || !difficulty) {
+      throw new Error('Failed to extract required problem details');
+    }
+
+    return {
+      title: title || '',
+      description: description || '',
+      tags: tags || [],
+      difficulty: difficulty || 'Medium', // Default to Medium if not found
+      solutionUrl: solutionUrl || ''
+    };
   } catch (error) {
     console.error('Error extracting problem details:', error);
-    return null;
+    throw error; // Propagate error to be handled by caller
   }
 }
-// Add listener for the send button
+
+//after clicking save button
 document.getElementById("send").addEventListener("click", async () => {
   try {
     updateStatus("🔄 Sending problem details...", "info");
     const approach = document.getElementById("approach").value ;
 
-    // Extract problem details
     // Check if we're still on the same LeetCode problem
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const url = tab.url;
@@ -120,19 +87,49 @@ document.getElementById("send").addEventListener("click", async () => {
       updateStatus("❌ Not on a LeetCode problem page.", "error");
       return;
     }
+
     // Add the approach to the problem details
     problemDetails.approach = approach;
 
-    // Send the details to your API
-    const response = await fetch(`${serverUrl}/save`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(problemDetails)
-    });
+        const database_id = process.env.NOTION_DATABASE_ID;
+    if (!database_id) {
+        updateStatus("❌ Notion database ID not configured.", "error");
+        return;
+    }
 
-    const data = await response.json();
+    try {
+        // Check if problem already exists
+        const allPages = await getAllPages(database_id);
+        const alreadyExists = allPages.some(page => {
+            const notionTitle = page.properties["Name"].title[0]?.text?.content;
+            return notionTitle?.trim().toLowerCase() === problemDetails.title.trim().toLowerCase();
+        });
+
+        if (alreadyExists) {
+            updateStatus("❌ Problem already exists in Notion database.", "error");
+            return;
+        }
+
+        // Add the new problem to Notion
+        const response = await addRow(
+            database_id, 
+            problemDetails.title, 
+            problemDetails.description, 
+            approach, 
+            problemDetails.solutionUrl, 
+            problemDetails.difficulty, 
+            problemDetails.tags
+        );
+
+        if (response) {
+            updateStatus("✅ Problem successfully added to Notion!", "success");
+        } else {
+            updateStatus("❌ Failed to add problem to Notion.", "error");
+        }
+    } catch (err) {
+        console.error('Error interacting with Notion:', err);
+        updateStatus("❌ Error interacting with Notion API.", "error");
+    }
 
     if (response.ok) {
       updateStatus("✅ Problem details sent successfully!", "success");
@@ -144,5 +141,3 @@ document.getElementById("send").addEventListener("click", async () => {
     updateStatus("❌ Network error while sending details.", "error");
   }
 });
-
-// Helper functions to extract problem details (implement these based on LeetCode's DOM structure)
