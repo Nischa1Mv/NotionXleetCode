@@ -5,7 +5,8 @@ import {
   extractProblemDifficulty,
   extractProblemUrl
 } from './utils.js';
-const serverUrl = `https://notionxleetcode.onrender.com`;
+import { BACKENDURL,DOMAIN } from './config.example.js';
+const serverUrl = BACKENDURL || DOMAIN;
 // Helper function to update status with proper styling
 function updateStatus(message, type = 'info') {
   const statusEl = document.getElementById("status");

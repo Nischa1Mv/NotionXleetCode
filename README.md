@@ -44,5 +44,8 @@ You can find the Notion template I use for this project [here](https://sleet-qua
     ↑ Database ID ↑ (everything before `?v=`)
 - Add this ID as `NOTION_DATABASE_ID` in your `.env` file
 
+### 4. Deploy the Backend
+- Deploy the backend service to a platform like Render (you can use other hosting services like Heroku, Vercel, etc.)
+- Add the backend URL in the `config.js` file inside the extension
 ---
 *Making learning visible, one problem at a time.*
