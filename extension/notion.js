@@ -1,19 +1,21 @@
-import { Client } from "@notionhq/client";
-import { NOTION_TOKEN  } from  './config.js'; 
+import { NOTION_TOKEN ,NOTION_DATABASE_ID } from './config.js';
 
-const notion = new Client({
-    auth: NOTION_TOKEN
-});
-
-async function getAllPages(databaseId) {
+async function getAllPages(databaseId=NOTION_DATABASE_ID) {
     try {
         if (!databaseId) {
             throw new Error('Database ID is required');
         }
 
-        const response = await notion.databases.query({
-            database_id: databaseId,
-            page_size: 100,
+        const response = await fetch("https://api.notion.com/v1/databases/" + databaseId + "/query", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${NOTION_TOKEN}`,
+                "Notion-Version": "2022-06-28",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                page_size: 100
+            })
         });
 
         if (!response || !response.results) {
@@ -29,57 +31,64 @@ async function getAllPages(databaseId) {
 
 async function addRow(databaseId, title, description, approach, solutionUrl, difficulty, tags) {
     try {
-        if (!databaseId || !title || !description || !approach|| !solutionUrl || !difficulty || !tags) {
+        if (!databaseId || !title || !description || !approach || !solutionUrl || !difficulty || !tags) {
             throw new Error('Missing  parameters: are required');
         }
 
         // Validate and sanitize inputs
         const sanitizedTags = Array.isArray(tags) ? tags : [];
         const sanitizedDifficulty = ['Easy', 'Medium', 'Hard'].includes(difficulty) ? difficulty : 'Medium';
-
-        const response = await notion.pages.create({
-            parent: { database_id: databaseId },
-            properties: {
-                "Name": {
-                    title: [
-                        {
-                            text: {
-                                content: title.substring(0, 2000)
+        const response = await fetch("https://api.notion.com/v1/pages", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${NOTION_TOKEN}`,
+                "Notion-Version": "2022-06-28",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                parent: { database_id: databaseId },
+                properties: {
+                    "Name": {
+                        title: [
+                            {
+                                text: {
+                                    content: title.substring(0, 2000)
+                                }
                             }
-                        }
-                    ]
-                },
-                "Problem": {
-                    rich_text: [
-                        {
-                            text: {
-                                content: description.substring(0, 2000)
+                        ]
+                    },
+                    "Problem": {
+                        rich_text: [
+                            {
+                                text: {
+                                    content: description.substring(0, 2000)
+                                }
                             }
-                        }
-                    ]
-                },
-                "Approach": {
-                    rich_text: [
-                        {
-                            text: {
-                                content: (approach || '').substring(0, 2000)
+                        ]
+                    },
+                    "Approach": {
+                        rich_text: [
+                            {
+                                text: {
+                                    content: (approach || '').substring(0, 2000)
+                                }
                             }
-                        }
-                    ]
-                },
-                "Solution": {
-                    url: solutionUrl || ''
-                },
-                "Difficulty": {
-                    select: { name: sanitizedDifficulty }
-                },
-                "Tags": {
-                    multi_select: sanitizedTags.map(tag => ({ name: tag.substring(0, 100) }))
-                },
-                "Status": {
-                    select: { name: "Synced" }
+                        ]
+                    },
+                    "Solution": {
+                        url: solutionUrl || ''
+                    },
+                    "Difficulty": {
+                        select: { name: sanitizedDifficulty }
+                    },
+                    "Tags": {
+                        multi_select: sanitizedTags.map(tag => ({ name: tag.substring(0, 100) }))
+                    },
+                    "Status": {
+                        select: { name: "Synced" }
+                    }
                 }
-            }
+            })
         });
 
         if (!response) {
@@ -93,4 +102,4 @@ async function addRow(databaseId, title, description, approach, solutionUrl, dif
     }
 }
 
-export {getAllPages, addRow };
+export { getAllPages, addRow };
