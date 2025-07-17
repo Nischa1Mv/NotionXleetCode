@@ -1,22 +1,25 @@
 # NotionXLeetCode
 
 ## Overview
-I often use the **Feynman Method** (named after physicist Richard Feynman) to track my LeetCode progress. This learning technique involves documenting problems to reinforce understanding.
+I often use the **Feynman Method** (named after physicist Richard Feynman) to track my LeetCode progress. This learning technique involves thoroughly documenting problems to reinforce understanding and ensure knowledge retention.
 
 ### Current Process
 Each time I solve a problem, I need to record various details:
 - Problem description
-- Difficulty level
-- Related topics
-- Solution approach
+- Difficulty level (Easy, Medium, Hard)
+- Related topics and algorithms
+- My solution approach and implementation
+- Key insights and learning points
 
-This manual documentation process becomes time-consuming, so I created this extension to automate it. The extension leverages an open-source LeetCode API to fetch problem information automatically.
+This manual documentation process becomes time-consuming, which is why I created this extension to automate it. The extension extracts question details from LeetCode and seamlessly integrates them into a Notion database using the Notion API.
 
-## Long-term Vision
-Eventually, I plan to expand this project to help users create and maintain their own Notion databases for tracking coding progress. Users will be able to:
-- Provide their Notion page IDs 
-- Set appropriate permissions
-- Track their coding journey efficiently
+### Notion Template
+You can find the Notion template I use for this project [here](https://sleet-quality-d08.notion.site/201dc128dd6580219324cc7ea77d4ccc?v=201dc128dd6580a19f13000c29133845&source=copy_link). Feel free to duplicate it for your own use.
+
+### Features
+- One-click problem documentation
+- Automatic extraction of problem metadata
+- Direct integration with Notion
 
 ---
 *Making learning visible, one problem at a time.*
