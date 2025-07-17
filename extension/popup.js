@@ -21,38 +21,6 @@ function updateStatus(message, type = 'info') {
   statusEl.className = `status-${type}`;
 }
 
-
-// document.getElementById("sync").addEventListener("click", async () => {
-//   try {
-//     updateStatus("🔄 Syncing...", "info");
-
-//     const res = await fetch(`${serverUrl}/sync`, {
-//       method: 'POST'
-//     });
-
-//     let data;
-//     try {
-//       data = await res.json();
-//     } catch (jsonErr) {
-//       updateStatus("❌ Invalid server response.", "error");
-//       return;
-//     }
-
-//     if (res.status === 429) {
-//       updateStatus("🚫 Rate limit exceeded. Try again later.", "warning");
-//     } else if (!res.ok) {
-//       updateStatus(data.error || "❌ Sync failed.", "error");
-//     } else {
-//       updateStatus(data.message || "✅ Sync completed!", "success");
-//     }
-
-//   } catch (err) {
-//     console.error('❌ Network error during sync:', err);
-//     updateStatus("❌ Failed to connect to server.", "error");
-//   }
-// });
-
-
 // Run when the extension is loaded
 // Global variable to store problem details
 let globalProblemDetails = null;
@@ -145,5 +113,3 @@ document.getElementById("send").addEventListener("click", async () => {
     updateStatus("❌ Network error while sending details.", "error");
   }
 });
-
-// Helper functions to extract problem details (implement these based on LeetCode's DOM structure)
