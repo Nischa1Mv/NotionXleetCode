@@ -28,12 +28,16 @@ You can find the Notion template I use for this project [here](https://sleet-qua
 - Create a new integration in [Notion's integrations dashboard](https://www.notion.com/my-integrations)
 
 ### 2. Configure API Access
-- Copy your API secret and add it as `NOTION_TOKEN` in your `.env` file
+- Create a Notion integration:
+    1. Go to [Notion's integrations page](https://www.notion.com/my-integrations)
+    2. Click "New integration" and follow the prompts
+    3. Copy your API secret key
+- Add your API secret as `NOTION_TOKEN` in your `.env` file (see `.env.example` for reference)
 - Grant the integration access to your database:
-    1. Navigate to your Notion database page
-    2. Click on the `...` (More) menu in the top-right corner
-    3. Scroll down and select `+ Add Connections`
-    4. Search for your integration and add it
+    1. Open your Notion database page
+    2. Click the `...` (More) menu in the top-right corner
+    3. Select `+ Add Connections`
+    4. Search for and add your integration
     5. Confirm access permissions
 
 ### 3. Set Database ID
@@ -41,11 +45,18 @@ You can find the Notion template I use for this project [here](https://sleet-qua
     ```
     https://www.notion.so/abc123def4567890abc123def4567890?v=def456abc1237890def456abc1237890
     ```
-    ↑ Database ID ↑ (everything before `?v=`)
+    ↑ Database ID is everything before `?v=`
 - Add this ID as `NOTION_DATABASE_ID` in your `.env` file
 
 ### 4. Deploy the Backend
-- Deploy the backend service to a platform like Render (you can use other hosting services like Heroku, Vercel, etc.)
-- Add the backend URL in the `config.js` file inside the extension
----
+- Deploy the backend service to a platform like Render, Heroku, Vercel, or similar
+
+### 5. Configure the Extension
+- Copy `config.example.js` to `config.js` in the extension directory
+- Update the backend URL in your config file:
+    ```javascript
+    // config.js
+    export const BACKEND_URL = 'https://your-deployed-backend-url.com';
+    ```
+
 *Making learning visible, one problem at a time.*
