@@ -24,6 +24,6 @@
   "homepage": "https://github.com/Nischa1Mv/NotionXleetCode#readme",
   "dependencies": {
     "axios": "^1.10.0",
-    "dotenv": "^17.2.0"
+    "notion": "^0.0.1"
   }
 }

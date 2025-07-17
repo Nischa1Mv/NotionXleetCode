@@ -1,9 +1,8 @@
 import { Client } from "@notionhq/client";
-import dotenv from "dotenv";
-dotenv.config();
+import { NOTION_TOKEN  } from  './config.js'; 
 
 const notion = new Client({
-    auth: process.env.NOTION_TOKEN
+    auth: NOTION_TOKEN
 });
 
 async function getAllPages(databaseId) {

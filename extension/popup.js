@@ -6,6 +6,7 @@ import {
   extractProblemUrl
 } from './utils.js';
 import { getAllPages, addRow } from './notion.js';
+import { NOTION_DATABASE_ID } from './config.js';
 
 // Run when the extension is loaded
 // Global variable to store problem details
@@ -91,7 +92,7 @@ document.getElementById("send").addEventListener("click", async () => {
     // Add the approach to the problem details
     problemDetails.approach = approach;
 
-        const database_id = process.env.NOTION_DATABASE_ID;
+        const database_id = NOTION_DATABASE_ID;
     if (!database_id) {
         updateStatus("❌ Notion database ID not configured.", "error");
         return;
